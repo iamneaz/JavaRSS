@@ -13,6 +13,7 @@ public class RSSReaderImpl implements RSSReader {
 
 
     public void runRSSReader(String urlAddress) throws IOException {
+
         List<RSSItems> entries = new ArrayList<>();
         List<String> items = new ArrayList<>();
         RSSHeader rssHeader = new RSSHeader();
@@ -34,16 +35,16 @@ public class RSSReaderImpl implements RSSReader {
 //        }
 
 
-//        for (String string : items) {
-//            RSSItems rssItems = new RSSItems();
-//            rssItems.setTitle(getElement(string, "<title>", "</title>", false));
-//            rssItems.setLink(getElement(string, "<link>", "</link>", false));
-//            rssItems.setGuid(getElement(string, "<guid>", "</guid>", false));
-//            List<RSSMedia> rssMediaList = getMediaElements(string);
-//            rssItems.setRssMediaList(rssMediaList);
-//            entries.add(rssItems);
-//
-//        }
+        for (String string : items) {
+            RSSItems rssItems = new RSSItems();
+            rssItems.setTitle(getElement(string, "<title>", "</title>", false));
+            rssItems.setLink(getElement(string, "<link>", "</link>", false));
+            rssItems.setGuid(getElement(string, "<guid>", "</guid>", false));
+            List<RSSMedia> rssMediaList = getMediaElements(string);
+            rssItems.setRssMediaList(rssMediaList);
+            entries.add(rssItems);
+
+        }
 //
 //
 //        for (RSSItems rssItems : entries) {
@@ -57,6 +58,44 @@ public class RSSReaderImpl implements RSSReader {
 //                System.out.println(rssMedia.getWidth());
 //            }
 //        }
+
+
+        RSSFeed rssFeed = new RSSFeed();
+        rssFeed.setRssHeader(rssHeader);
+        rssFeed.setEntries(entries);
+
+        try {
+            FileWriter writer = new FileWriter("a.rss", true);
+            writer.write("<?xml version="+"1.0"+" encoding="+"UTF-8"+"?>"+"\n");
+            String[] xml = rssFeed.getRssHeader().getXml();
+            writer.write("<?xml"+xml[0]+"?>"+"<?xml"+xml[1]+"?>"+"<rss "+rssFeed.getRssHeader().getRss()+">"+"<channel>");
+            writer.write("<title>"+rssFeed.getRssHeader().getTitle()+"</title>");
+            writer.write("<description>"+rssFeed.getRssHeader().getDescription()+"</description>");
+            writer.write("<link>"+rssFeed.getRssHeader().getLink()+"</link>");
+            //image
+            writer.write("<image>"+"<url>"+rssFeed.getRssHeader().getImageURL()+"</url>");
+            writer.write("<title>"+rssFeed.getRssHeader().getImageTitle()+"</title>");
+            writer.write("<link>"+rssFeed.getRssHeader().getImageLink()+"</link></image>");
+            writer.write("<generator>"+rssFeed.getRssHeader().getGenerator()+"</generator>");
+            writer.write("<lastBuildDate>"+rssFeed.getRssHeader().getLastBuildDate()+"</lastBuildDate>");
+            writer.write("<pubDate>"+rssFeed.getRssHeader().getPubDate()+"</pubDate>");
+            writer.write("<copyright>"+rssFeed.getRssHeader().getCopyright()+"</copyright>");
+            writer.write("<language>"+rssFeed.getRssHeader().getLanguage()+"</language>");
+            writer.write("<ttl>"+rssFeed.getRssHeader().getTtl()+"</ttl>");
+            String[] atom = rssFeed.getRssHeader().getAtom10();
+            writer.write("<atom10:link"+atom[0]+"/>");
+            writer.write("<feedburner:info "+rssFeed.getRssHeader().getFeedBurner()+"/>");
+            writer.write("<atom10:link"+atom[1]+" />");
+
+
+
+
+            writer.write("\r\n");   // write new line
+
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
 
     }
@@ -169,11 +208,17 @@ public class RSSReaderImpl implements RSSReader {
                         rssHeader.setImageURL(getElement(line, "<image><url>", "</url>", false));
                         rssHeader.setImageTitle(getElement(line, "</url><title>", "</title>", false));
                         rssHeader.setImageLink(getElement(line, "</title><link>", "</link>", false));
+                        rssHeader.setGenerator(getElement(line, "<generator>", "</generator>", false));
                         rssHeader.setCopyright(getElement(line, "<copyright>", "</copyright>", false));
                         rssHeader.setLastBuildDate(getElement(line, "<lastBuildDate>", "</lastBuildDate>", false));
                         rssHeader.setPubDate(getElement(line, "<pubDate>", "</pubDate>", false));
                         rssHeader.setLanguage(getElement(line, "<language>", "</language>", false));
                         rssHeader.setTtl(getElement(line, "<ttl>", "</ttl>", false));
+                        String[] atom = new String[2];
+                        atom[0]=getElement(line, "</ttl><atom10:link", "/><feedburner:info", false);
+                        atom[1]=getElement(line, "\" /><atom10:link", ".com/\"", true);
+                        rssHeader.setAtom10(atom);
+                        rssHeader.setFeedBurner(getElement(line, "<feedburner:info", "/><atom10:link", false));
                     } else {
                         //System.out.println("break");
                         break;

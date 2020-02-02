@@ -18,6 +18,8 @@ public class RSSHeader {
         private String[] xml;
         private String rss;
         private String generator;
+        private String[] atom10;
+        private String feedBurner;
 
 
     public String getTitle() {
@@ -124,5 +126,27 @@ public class RSSHeader {
         this.rss = rss;
     }
 
+    public String getGenerator() {
+        return generator;
+    }
 
+    public void setGenerator(String generator) {
+        this.generator = generator;
+    }
+
+    public String[] getAtom10() {
+        return atom10;
+    }
+
+    public void setAtom10(String[] atom10) {
+        this.atom10 = atom10;
+    }
+
+    public String getFeedBurner() {
+        return feedBurner;
+    }
+
+    public void setFeedBurner(String feedBurner) {
+        this.feedBurner = feedBurner;
+    }
 }
