@@ -1,12 +1,14 @@
 package com.iamneaz;
 
+import java.io.IOException;
+
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 	// write your code here
-        RSSReader rssReader = new RSSReader();
+        RSSReaderImpl rssReaderImpl = new RSSReaderImpl();
         //System.out.println();
-        rssReader.runRSSReader("http://rss.cnn.com/rss/edition.rss");
+        rssReaderImpl.runRSSReader("http://rss.cnn.com/rss/edition.rss");
 
     }
 }
