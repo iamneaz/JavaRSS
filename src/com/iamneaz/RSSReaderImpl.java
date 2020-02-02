@@ -85,6 +85,7 @@ public class RSSReaderImpl implements RSSReader {
             String[] atom = rssFeed.getRssHeader().getAtom10();
             writer.write("<atom10:link"+atom[0]+"/>");
             writer.write("<feedburner:info "+rssFeed.getRssHeader().getFeedBurner()+"/>");
+
             writer.write("<atom10:link"+atom[1]+" />");
 
 
