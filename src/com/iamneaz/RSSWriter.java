@@ -2,5 +2,5 @@ package com.iamneaz;
 
 public interface RSSWriter {
 
-    void runRSSWriter(RSSFeed rssFeed,String location,String filename);
+    void runRSSWriter(RSSFeed rssFeed,String location,String filename,boolean append);
 }

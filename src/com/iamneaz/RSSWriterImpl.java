@@ -7,9 +7,9 @@ public class RSSWriterImpl implements RSSWriter{
 
 
     @Override
-    public void runRSSWriter(RSSFeed rssFeed,String location,String filename) {
+    public void runRSSWriter(RSSFeed rssFeed,String location,String filename,boolean append) {
         try {
-            FileWriter writer = new FileWriter(location+filename, true);
+            FileWriter writer = new FileWriter(location+filename, append);
             /*
                 Header
              */
