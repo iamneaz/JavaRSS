@@ -1,9 +1,6 @@
 package com.iamneaz;
 
-import java.io.BufferedReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -12,101 +9,72 @@ import java.util.List;
 public class RSSReaderImpl implements RSSReader {
 
 
-    public void runRSSReader(String urlAddress) throws IOException {
+    public RSSFeed runRSSReader(String address,boolean url) throws IOException {
 
         List<RSSItems> entries = new ArrayList<>();
         List<String> items = new ArrayList<>();
+        // reading all the header elements
         RSSHeader rssHeader = new RSSHeader();
-        rssHeader = getHeaderItems(urlAddress);
+        if(url)
+        {
+            rssHeader = getHeaderItems(address,true);
+        }
+        else
+        {
+            rssHeader = getHeaderItems(address,false);
+        }
+
+
+        // getting each item
         try {
-            items = getItems(urlAddress);
+            if(url)
+            {
+                items = getItems(address,true);
+            }
+            else
+            {
+                items = getItems(address,false);
+            }
+
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-//        try {
-//            FileWriter writer = new FileWriter("a.rss", true);
-//            writer.write("Hello World");
-//            writer.write("\r\n");   // write new line
-//            writer.write("Good Bye!");
-//            writer.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-
-
+        // extracting information from that item and adding to entries
         for (String string : items) {
             RSSItems rssItems = new RSSItems();
             rssItems.setTitle(getElement(string, "<title>", "</title>", false));
+            //System.out.println();
             rssItems.setLink(getElement(string, "<link>", "</link>", false));
-            rssItems.setGuid(getElement(string, "<guid>", "</guid>", false));
+            rssItems.setGuid(getElement(string, "<guid", "</guid>", false));
             List<RSSMedia> rssMediaList = getMediaElements(string);
             rssItems.setRssMediaList(rssMediaList);
             entries.add(rssItems);
 
         }
-//
-//
-//        for (RSSItems rssItems : entries) {
-//            System.out.println(rssItems.getTitle());
-//            System.out.println(rssItems.getGuid());
-//            System.out.println(rssItems.getLink());
-//            List<RSSMedia> rssMediaList = rssItems.getRssMediaList();
-//            for (RSSMedia rssMedia : rssMediaList) {
-//                System.out.println(rssMedia.getUrl());
-//                System.out.println(rssMedia.getHeight());
-//                System.out.println(rssMedia.getWidth());
-//            }
-//        }
-
-
+        // adding the header and entries to rss feed
         RSSFeed rssFeed = new RSSFeed();
         rssFeed.setRssHeader(rssHeader);
         rssFeed.setEntries(entries);
 
-        try {
-            FileWriter writer = new FileWriter("a.rss", true);
-            writer.write("<?xml version="+"1.0"+" encoding="+"UTF-8"+"?>"+"\n");
-            String[] xml = rssFeed.getRssHeader().getXml();
-            writer.write("<?xml"+xml[0]+"?>"+"<?xml"+xml[1]+"?>"+"<rss "+rssFeed.getRssHeader().getRss()+">"+"<channel>");
-            writer.write("<title>"+rssFeed.getRssHeader().getTitle()+"</title>");
-            writer.write("<description>"+rssFeed.getRssHeader().getDescription()+"</description>");
-            writer.write("<link>"+rssFeed.getRssHeader().getLink()+"</link>");
-            //image
-            writer.write("<image>"+"<url>"+rssFeed.getRssHeader().getImageURL()+"</url>");
-            writer.write("<title>"+rssFeed.getRssHeader().getImageTitle()+"</title>");
-            writer.write("<link>"+rssFeed.getRssHeader().getImageLink()+"</link></image>");
-            writer.write("<generator>"+rssFeed.getRssHeader().getGenerator()+"</generator>");
-            writer.write("<lastBuildDate>"+rssFeed.getRssHeader().getLastBuildDate()+"</lastBuildDate>");
-            writer.write("<pubDate>"+rssFeed.getRssHeader().getPubDate()+"</pubDate>");
-            writer.write("<copyright>"+rssFeed.getRssHeader().getCopyright()+"</copyright>");
-            writer.write("<language>"+rssFeed.getRssHeader().getLanguage()+"</language>");
-            writer.write("<ttl>"+rssFeed.getRssHeader().getTtl()+"</ttl>");
-            String[] atom = rssFeed.getRssHeader().getAtom10();
-            writer.write("<atom10:link"+atom[0]+"/>");
-            writer.write("<feedburner:info "+rssFeed.getRssHeader().getFeedBurner()+"/>");
-
-            writer.write("<atom10:link"+atom[1]+" />");
-
-
-
-
-            writer.write("\r\n");   // write new line
-
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+        return rssFeed;
 
     }
 
 
-    public List<String> getItems(String urlAddress) throws IOException {
-        URL rssURL = new URL(urlAddress);
-        BufferedReader in = new BufferedReader(new InputStreamReader(rssURL.openStream()));
+    public List<String> getItems(String address,boolean url) throws IOException {
+        BufferedReader in;
+        if(url)
+        {
+            URL rssURL = new URL(address);
+            in = new BufferedReader(new InputStreamReader(rssURL.openStream()));
+        }
+        else
+        {
+            in = new BufferedReader(new FileReader(address));
+        }
+        String line="";
 
-        String line;
         List<String> items = new ArrayList<>();
         while ((line = in.readLine()) != null) {
             int itemEndIndex = 0;
@@ -117,8 +85,7 @@ public class RSSReaderImpl implements RSSReader {
                     itemEndIndex = line.indexOf("</item>", itemStartIndex);
                     if (itemEndIndex >= 0) {
 
-                        System.out.println(line.substring(itemStartIndex + "<item>".length(), itemEndIndex));
-                        //sourceCode += line.substring(titleStartIndex + "<item>".length(), titleEndIndex) + "\n";
+                        //System.out.println(line.substring(itemStartIndex + "<item>".length(), itemEndIndex));
                         items.add(line.substring(itemStartIndex + "<item>".length(), itemEndIndex));
                     } else {
                         break;
@@ -167,15 +134,22 @@ public class RSSReaderImpl implements RSSReader {
             titleStartIndex = itemString.indexOf("<media:", titleEndIndex);
             if (titleStartIndex >= 0) {
                 titleEndIndex = itemString.indexOf("\" />", titleStartIndex);
-                //System.out.println(line.substring(titleStartIndex + "<item>".length(), titleEndIndex));
-                //sourceCode += line.substring(titleStartIndex + "<item>".length(), titleEndIndex) + "\n";
-                String rssMediaString = itemString.substring(titleStartIndex + "<media:".length(), titleEndIndex);
-                RSSMedia rssMedia = new RSSMedia();
-                rssMedia.setUrl(getElement(rssMediaString, "url=\"", "\" height", false));
-                rssMedia.setHeight(getElement(rssMediaString, "height=\"", "\" width", false));
-                rssMedia.setWidth(getElement(rssMediaString, "width=\"", "\" type", false));
-                //rssMedia.setType(getElement(rssMediaString,"type=\"","\" />"));
-                rssMediaList.add(rssMedia);
+                if (titleEndIndex >= titleStartIndex) {
+                    //System.out.println(line.substring(titleStartIndex + "<item>".length(), titleEndIndex));
+                    //sourceCode += line.substring(titleStartIndex + "<item>".length(), titleEndIndex) + "\n";
+                    String rssMediaString = itemString.substring(titleStartIndex + "<media:".length(), titleEndIndex);
+                    RSSMedia rssMedia = new RSSMedia();
+                    rssMedia.setMedium(getElement(rssMediaString, "medium=", "url=", false));
+                    rssMedia.setUrl(getElement(rssMediaString, "url=", " height", false));
+                    rssMedia.setHeight(getElement(rssMediaString, "height=", " width", false));
+                    rssMedia.setWidth(getElement(rssMediaString, "width=", " type", false));
+                    //rssMedia.setType(getElement(rssMediaString, "type=", "\"", false));
+                    rssMediaList.add(rssMedia);
+                }
+                else
+                {
+                    break;
+                }
             }
         }
 
@@ -183,9 +157,18 @@ public class RSSReaderImpl implements RSSReader {
 
     }
 
-    public RSSHeader getHeaderItems(String urlAddress) throws IOException {
-        URL rssURL = new URL(urlAddress);
-        BufferedReader in = new BufferedReader(new InputStreamReader(rssURL.openStream()));
+    public RSSHeader getHeaderItems(String address,boolean url) throws IOException {
+        BufferedReader in;
+        if(url)
+        {
+            URL rssURL = new URL(address);
+            in = new BufferedReader(new InputStreamReader(rssURL.openStream()));
+        }
+        else
+        {
+            in = new BufferedReader(new FileReader(address));
+        }
+
         RSSHeader rssHeader = new RSSHeader();
         String line;
         while ((line = in.readLine()) != null) {

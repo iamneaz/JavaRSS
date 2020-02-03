@@ -2,10 +2,19 @@ package com.iamneaz;
 
 public class RSSMedia {
 
+    private String medium;
     private String url;
     private String height;
     private String width;
+    private String type;
 
+    public String getMedium() {
+        return medium;
+    }
+
+    public void setMedium(String medium) {
+        this.medium = medium;
+    }
 
     public String getUrl() {
         return url;
@@ -31,5 +40,11 @@ public class RSSMedia {
         this.width = width;
     }
 
+    public String getType() {
+        return type;
+    }
 
+    public void setType(String type) {
+        this.type = type;
+    }
 }
