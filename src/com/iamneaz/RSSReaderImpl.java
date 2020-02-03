@@ -4,6 +4,8 @@ import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
 
 public class RSSReaderImpl implements RSSReader {
@@ -11,10 +13,10 @@ public class RSSReaderImpl implements RSSReader {
 
     public RSSFeed runRSSReader(String address,boolean url) throws IOException {
 
-        List<RSSItems> entries = new ArrayList<>();
+        List<RSSItems> entries = new LinkedList<>();
         List<String> items = new ArrayList<>();
         // reading all the header elements
-        RSSHeader rssHeader = new RSSHeader();
+        RSSHeader rssHeader;
         if(url)
         {
             rssHeader = getHeaderItems(address,true);
@@ -73,7 +75,7 @@ public class RSSReaderImpl implements RSSReader {
         {
             in = new BufferedReader(new FileReader(address));
         }
-        String line="";
+        String line;
 
         List<String> items = new ArrayList<>();
         while ((line = in.readLine()) != null) {

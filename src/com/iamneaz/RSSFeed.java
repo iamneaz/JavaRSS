@@ -1,5 +1,6 @@
 package com.iamneaz;
 
+import java.util.Deque;
 import java.util.List;
 
 public class RSSFeed {
