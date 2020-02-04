@@ -1,25 +1,23 @@
-package com.iamneaz;
+package com.iamneaz.rssMaterial;
 
-import java.util.List;
+public class Header {
 
-public class RSSHeader {
-
-        private String title;
-        private String description;
-        private String link;
-        private String lastBuildDate;
-        private String pubDate;
-        private String imageURL;
-        private String imageTitle;
-        private String imageLink;
-        private String copyright;
-        private String language;
-        private String ttl;
-        private String[] xml;
-        private String rss;
-        private String generator;
-        private String[] atom10;
-        private String feedBurner;
+    private String title;
+    private String description;
+    private String link;
+    private String lastBuildDate;
+    private String pubDate;
+    private String imageURL;
+    private String imageTitle;
+    private String imageLink;
+    private String copyright;
+    private String language;
+    private String ttl;
+    private String[] xml;
+    private String rss;
+    private String generator;
+    private String[] atom10;
+    private String feedBurner;
 
 
     public String getTitle() {

@@ -1,12 +1,12 @@
-package com.iamneaz;
+package com.iamneaz.rssMaterial;
 
 import java.util.List;
 
-public class RSSItems {
-    private String title ;
-    private String link ;
-    private String guid ;
-    private List<RSSMedia> rssMediaList;
+public class Items {
+    private String title;
+    private String link;
+    private String guid;
+    private List<Media> mediaList;
 
     public String getTitle() {
         return title;
@@ -32,11 +32,11 @@ public class RSSItems {
         this.guid = guid;
     }
 
-    public List<RSSMedia> getRssMediaList() {
-        return rssMediaList;
+    public List<Media> getMediaList() {
+        return mediaList;
     }
 
-    public void setRssMediaList(List<RSSMedia> rssMediaList) {
-        this.rssMediaList = rssMediaList;
+    public void setMediaList(List<Media> mediaList) {
+        this.mediaList = mediaList;
     }
 }

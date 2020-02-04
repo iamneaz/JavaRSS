@@ -1,6 +1,6 @@
-package com.iamneaz;
+package com.iamneaz.rssMaterial;
 
-public class RSSMedia {
+public class Media {
 
     private String medium;
     private String url;
