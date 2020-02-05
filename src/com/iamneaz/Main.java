@@ -65,7 +65,7 @@ public class Main {
                 service.shutdown();
             }
         };
-        service.scheduleAtFixedRate(stopThreads, 1, 2, TimeUnit.MINUTES);
+        service.scheduleAtFixedRate(stopThreads, 1, 1, TimeUnit.MINUTES);
 
 
     }
