@@ -1,12 +1,11 @@
 package com.iamneaz;
 
-import com.iamneaz.implementations.ReadImpl;
-import com.iamneaz.implementations.UpdateImpl;
-import com.iamneaz.rssMaterial.Feed;
-import com.iamneaz.rssMaterial.Items;
-import com.iamneaz.rssMaterial.Media;
+import com.iamneaz.threads.PrintThread;
+import com.iamneaz.threads.UpdateThread;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -14,45 +13,22 @@ import java.util.concurrent.TimeUnit;
 public class Main {
 
     public static void main(String[] args){
-
-        String urlAddress = "http://rss.cnn.com/rss/edition.rss";
-        String fileAddress = "a.rss";
+        Properties prop = new Properties();
+        try {
+            prop.load(new FileInputStream("src/com/iamneaz/properties/address.properties"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
 
         //updates \a.rss in every 15 seconds with the content fetched from http://rss.cnn.com/rss/edition.rss
-        Runnable rssUpdater = new Runnable() {
-            public void run() {
-                System.out.println("thread1");
-                UpdateImpl updateRSS = new UpdateImpl();
-                updateRSS.runUpdateRSS(urlAddress, fileAddress);
-
-            }
-        };
-        service.scheduleAtFixedRate(rssUpdater, 0, 15, TimeUnit.SECONDS);
+        UpdateThread updateThread = new UpdateThread(prop.getProperty("urlAddress"),prop.getProperty("fileAddress"));
+        updateThread.run();
+        service.scheduleAtFixedRate(updateThread, 0, 15, TimeUnit.SECONDS);
 
         //reads a.rss and prints the list of jpg image references in the file.
-        Runnable rssImagePrinter = new Runnable() {
-            public void run() {
-                System.out.println("thread2");
-
-                ReadImpl rssReader = new ReadImpl();
-                try {
-                    Feed feed = rssReader.runRSSReader(fileAddress, false);
-                    for (Items items : feed.getEntries()) {
-                        for (Media rssMedia : items.getMediaList()) {
-                            if (rssMedia.getUrl().endsWith(".jpg\"")) {
-                                System.out.println(rssMedia.getUrl().replace("\"", ""));
-                            }
-                        }
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-
-            }
-        };
-        service.scheduleAtFixedRate(rssImagePrinter, 0, 20, TimeUnit.SECONDS);
+        PrintThread printThread = new PrintThread(prop.getProperty("urlAddress"),prop.getProperty("fileAddress"));
+        service.scheduleAtFixedRate(printThread, 0, 20, TimeUnit.SECONDS);
 
         /*
             In the given problem, There is no mention of when the threads would stop.

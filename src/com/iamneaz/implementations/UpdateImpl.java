@@ -32,20 +32,30 @@ public class UpdateImpl implements Update {
 
     public int findIndex(Feed feedURL, Feed feedFile) {
         int sameItemIndex = 0;
-        /*
+
+        // checking if the file is empty
+        if (feedFile.getEntries().size()<=0)
+        {
+            sameItemIndex= -1;
+        }
+        else
+        {
+            /*
             The for loop checks the title of each item of the rss feed from url is the same as the 1st title of the 1st item
             of the rss feed of the file and stores the index in sameItemIndex;
             if none matches, then the variable sameItemIndex is -1
-         */
-        for (int i = 0; i < feedURL.getEntries().size() - 1; i++) {
-            if (feedURL.getEntries().get(i).getTitle().replace("<![CDATA[", "").replace("]]>", "").trim().equalsIgnoreCase(feedFile.getEntries().get(0).getTitle().replace("<![CDATA[", "").replace("]]>", "").trim())) {
-                sameItemIndex = i;
-                break;
-            } else {
-                sameItemIndex = -1;
-            }
+            */
+            for (int i = 0; i < feedURL.getEntries().size() - 1; i++) {
+                if (feedURL.getEntries().get(i).getTitle().replace("<![CDATA[", "").replace("]]>", "").trim().equalsIgnoreCase(feedFile.getEntries().get(0).getTitle().replace("<![CDATA[", "").replace("]]>", "").trim())) {
+                    sameItemIndex = i;
+                    break;
+                } else {
+                    sameItemIndex = -1;
+                }
 
+            }
         }
+
         return sameItemIndex;
     }
 
